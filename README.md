@@ -14,6 +14,11 @@ Os vértices representam ativos da infraestrutura, como firewall, VPN, servidore
 
 A rede utilizada é sintética e foi criada apenas para fins acadêmicos. Ela não representa uma empresa real e não contém dados sensíveis.
 
+## Origem da visualização 3D
+
+A ideia de utilizar uma visualização 3D como apoio à interpretação do grafo foi inspirada em uma modelagem apresentada por **Arthur Cury Kramberger** em um seminário da disciplina **Medição e Experimentação de Software**, no **1º semestre de 2026**, durante o **6º período**. Na proposta original, a visualização 3D era utilizada para relacionar artigos acadêmicos a uma ementa de disciplina. Neste projeto, essa ideia foi adaptada para outro contexto: a representação de ativos, conexões e caminhos críticos em uma rede corporativa fictícia.
+
+
 ## Base conceitual
 
 A modelagem foi definida a partir de três artigos de referência enviados para o trabalho:
@@ -42,56 +47,6 @@ O projeto aplica os seguintes conceitos de Teoria dos Grafos:
 * **Caminho mínimo:** identifica a rota de menor custo entre a Internet e ativos críticos, como o banco de dados.
 * **Centralidade:** aponta ativos estruturalmente relevantes na rede.
 * **Corte mínimo:** indica conexões estratégicas que podem ser bloqueadas, segmentadas ou reforçadas para dificultar o acesso a ativos sensíveis.
-
-## Estrutura do projeto
-
-```text
-cyber-graph-risk-mapping/
-├── data/
-│   ├── ativos.csv
-│   └── conexoes.csv
-├── datasets/
-│   └── seguranca/
-│       ├── graph.json
-│       ├── resultados.json
-│       └── resumo.md
-├── src/
-│   ├── analysis.py
-│   ├── export.py
-│   ├── model.py
-│   └── visualization_data.py
-├── visualizacao/
-│   └── index.html
-├── main.py
-├── requirements.txt
-└── README.md
-```
-
-## Execução
-
-Instale as dependências:
-
-```bash
-pip install -r requirements.txt
-```
-
-Gere o grafo e os resultados:
-
-```bash
-python main.py
-```
-
-Execute um servidor local:
-
-```bash
-python -m http.server 8000
-```
-
-Abra a visualização 3D no navegador:
-
-```text
-http://localhost:8000/visualizacao/
-```
 
 ## Saídas geradas
 
