@@ -4,7 +4,7 @@
 
 **Professor/Orientador:** Luiz Henrique da costa Silva
 
-**Instituição:** PUC Minas
+**Instituição:** PUC Minas - /2026
 
 ## Sobre o projeto
 
@@ -14,10 +14,9 @@ Os vértices representam ativos da infraestrutura, como firewall, VPN, servidore
 
 A rede utilizada é sintética e foi criada apenas para fins acadêmicos. Ela não representa uma empresa real e não contém dados sensíveis.
 
-## Origem da visualização 3D
+## Origem da visualização 3D, no contexto do semestre atual do aluno
 
-A ideia de utilizar uma visualização 3D como apoio à interpretação do grafo foi inspirada em uma modelagem apresentada por **Arthur Cury Kramberger** em um seminário da disciplina **Medição e Experimentação de Software**, no **1º semestre de 2026**, durante o **6º período**. Na proposta original, a visualização 3D era utilizada para relacionar artigos acadêmicos a uma ementa de disciplina. Neste projeto, essa ideia foi adaptada para outro contexto: a representação de ativos, conexões e caminhos críticos em uma rede corporativa fictícia.
-
+A ideia de utilizar uma visualização 3D como apoio à interpretação do grafo foi inspirada em uma modelagem apresentada por **[@arthurcuri](https://github.com/arthurcuri)** em um seminário da disciplina **Medição e Experimentação de Software**, no **1º semestre de 2026**, durante o **6º período**. Na proposta original, a visualização 3D era utilizada para relacionar artigos acadêmicos a uma ementa de disciplina. Neste projeto, essa ideia foi adaptada para outro contexto: a representação de ativos, conexões e caminhos críticos em uma rede corporativa fictícia.
 
 ## Base conceitual
 
