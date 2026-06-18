@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Graph Risk Mapping</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #04040E;
+            --surface: rgba(4,8,22,0.96);
+            --text: #E8E8F0;
+            --text-dim: #9090B0;
+            --text-muted: #464660;
+            --amber: #FFB300;
+            --red: #FF2D55;
+            --border: rgba(255,255,255,0.06);
+            --radius: 8px;
+            --panel-w: 290px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg); color: var(--text);
+            font-family: 'Inter', sans-serif; font-weight: 300;
+            overflow: hidden; -webkit-font-smoothing: antialiased;
+        }
+        #graph { position: fixed; inset: 0; }
+
+        /* ── LEFT PANEL ── */
+        #info-panel {
+            position: fixed; left: 0; top: 0; width: var(--panel-w); height: 100vh;
+            background: var(--surface); border-right: 1px solid var(--border);
+            padding: 18px 15px 24px; overflow-y: auto; z-index: 100;
+            backdrop-filter: blur(24px);
+        }
+        #info-panel::-webkit-scrollbar { width: 2px; }
+        #info-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); }
+
+        .brand {
+            font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 500;
+            letter-spacing: 0.1em; color: var(--amber); text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+        .brand-sub {
+            font-size: 9px; color: var(--text-muted); line-height: 1.5; margin-bottom: 18px;
+        }
+        .sec-hdr {
+            font-family: 'JetBrains Mono', monospace; font-size: 8px; font-weight: 500;
+            color: var(--text-muted); letter-spacing: 0.18em; text-transform: uppercase;
+            margin: 14px 0 7px; padding-bottom: 4px; border-bottom: 1px solid var(--border);
+        }
+
+        /* legend */
+        .leg-item {
+            display: flex; align-items: center; gap: 7px; font-size: 10px;
+            color: var(--text-dim); padding: 3px 0; cursor: pointer; transition: color 0.15s;
+        }
+        .leg-item:hover { color: var(--text); }
+        .leg-item input { width: 11px; height: 11px; cursor: pointer; }
+        .leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+        /* path display */
+        .path-chain {
+            font-family: 'JetBrains Mono', monospace; font-size: 9px;
+            color: var(--amber); line-height: 2;
+        }
+        .path-sep { color: var(--text-muted); }
+        .path-cost {
+            font-family: 'JetBrains Mono', monospace; font-size: 9px;
+            color: var(--text-dim); margin-top: 5px;
+        }
+        .alt-path {
+            font-size: 9px; color: var(--text-muted); line-height: 1.7; margin-top: 4px;
+        }
+
+        /* centrality bars */
+        .cent-row {
+            display: flex; align-items: center; gap: 6px; padding: 2px 0;
+        }
+        .cent-rank {
+            font-family: 'JetBrains Mono', monospace; font-size: 8px;
+            color: var(--text-muted); width: 12px; flex-shrink: 0;
+        }
+        .cent-name {
+            font-size: 9px; color: var(--text-dim); flex: 1;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .cent-bar-wrap { width: 36px; flex-shrink: 0; }
+        .cent-bar { height: 2px; background: var(--border); border-radius: 1px; }
+        .cent-fill { height: 100%; background: var(--amber); border-radius: 1px; }
+        .cent-val {
+            font-family: 'JetBrains Mono', monospace; font-size: 8px;
+            color: var(--text-muted); width: 40px; text-align: right; flex-shrink: 0;
+        }
+
+        /* min cut */
+        .cut-val {
+            font-family: 'JetBrains Mono', monospace; font-size: 10px;
+            color: var(--text-dim); margin-bottom: 6px;
+        }
+        .cut-val strong { color: var(--red); }
+        .cut-edge-row {
+            display: flex; align-items: center; gap: 6px; font-size: 9px;
+            color: var(--red); padding: 2px 0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .cut-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+
+        /* visual key */
+        .key-row { display: flex; align-items: center; gap: 8px; font-size: 9px; color: var(--text-dim); padding: 3px 0; }
+        .key-line { width: 18px; height: 2px; border-radius: 1px; flex-shrink: 0; }
+
+        /* stats bar */
+        #stats {
+            position: fixed; left: calc(var(--panel-w) + 10px); bottom: 12px;
+            font-family: 'JetBrains Mono', monospace; font-size: 8px;
+            color: var(--text-muted); z-index: 100; pointer-events: none;
+        }
+
+        /* ── RIGHT DETAIL PANEL ── */
+        #detail-panel {
+            position: fixed; right: 0; top: 0; width: 350px; height: 100vh;
+            background: var(--surface); border-left: 1px solid var(--border);
+            padding: 26px 20px; overflow-y: auto; z-index: 200;
+            backdrop-filter: blur(24px);
+            transform: translateX(100%);
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        #detail-panel.open { transform: translateX(0); }
+        #detail-panel::-webkit-scrollbar { width: 2px; }
+        #detail-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); }
+
+        .d-type {
+            font-family: 'JetBrains Mono', monospace; font-size: 8px;
+            letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px;
+        }
+        .d-title {
+            font-size: 17px; font-weight: 400; color: var(--text);
+            border-left: 3px solid; padding-left: 11px; line-height: 1.3; margin-bottom: 8px;
+        }
+        .d-badges { display: flex; gap: 5px; margin-bottom: 18px; padding-left: 14px; flex-wrap: wrap; }
+        .badge {
+            font-family: 'JetBrains Mono', monospace; font-size: 8px; padding: 2px 6px;
+            border-radius: 3px; border: 1px solid; text-transform: uppercase; letter-spacing: 0.08em;
+        }
+        .badge-path { color: var(--amber); border-color: rgba(255,179,0,0.35); }
+        .badge-cut  { color: var(--red);   border-color: rgba(255,45,85,0.35); }
+        .badge-crit { color: #FF6B6B;      border-color: rgba(255,107,107,0.35); }
+
+        .d-field { margin-bottom: 13px; }
+        .d-label {
+            font-family: 'JetBrains Mono', monospace; font-size: 8px;
+            color: var(--text-muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 3px;
+        }
+        .d-value { font-size: 11px; color: var(--text-dim); line-height: 1.6; }
+
+        .neighbor-wrap { display: flex; flex-wrap: wrap; gap: 5px; }
+        .neighbor-tag {
+            font-size: 9px; color: var(--text-muted); padding: 2px 7px;
+            border: 1px solid var(--border); border-radius: 4px;
+        }
+        .close-btn {
+            position: absolute; top: 14px; right: 14px; width: 30px; height: 30px;
+            border: none; background: transparent; color: var(--text-muted);
+            cursor: pointer; font-size: 20px; display: flex;
+            align-items: center; justify-content: center; border-radius: 5px;
+            transition: color 0.2s, background 0.2s;
+        }
+        .close-btn:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+
+        @media (max-width: 768px) {
+            #info-panel { display: none; }
+            #detail-panel { width: 100vw; }
+            #stats { left: 12px; }
+        }
+    </style>
+</head>
+<body>
+<div id="graph"></div>
+
+<div id="info-panel">
+    <div class="brand">Cyber Graph Risk Mapping</div>
+    <div class="brand-sub" id="graph-desc">Rede corporativa fictícia</div>
+
+    <div class="sec-hdr">Tipos de Ativo</div>
+    <div id="legend"></div>
+
+    <div class="sec-hdr">Caminho Mínimo</div>
+    <div id="path-display"><span style="color:var(--text-muted);font-size:9px">Carregando...</span></div>
+
+    <div class="sec-hdr">Top 5 Centralidade</div>
+    <div id="cent-display"></div>
+
+    <div class="sec-hdr">Corte Mínimo</div>
+    <div id="cut-display"></div>
+
+    <div class="sec-hdr">Legenda Visual</div>
+    <div class="key-row">
+        <div class="key-line" style="background:var(--amber)"></div>
+        <span>Caminho mínimo (Dijkstra)</span>
+    </div>
+    <div class="key-row" style="margin-top:2px">
+        <div class="key-line" style="background:var(--red)"></div>
+        <span>Aresta de corte mínimo</span>
+    </div>
+    <div class="key-row" style="margin-top:2px">
+        <div style="width:10px;height:10px;border-radius:50%;border:1px solid rgba(255,107,107,0.5);flex-shrink:0"></div>
+        <span>Ativo crítico (alta/crítica)</span>
+    </div>
+</div>
+
+<div id="stats"></div>
+
+<div id="detail-panel">
+    <button class="close-btn" id="close-detail">&times;</button>
+    <div id="detail-inner"></div>
+</div>
+
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<script src="https://unpkg.com/3d-force-graph@1.73.3/dist/3d-force-graph.min.js"></script>
+<script>
+(function () {
+    'use strict';
+
+    const GRAPH_URL = '../datasets/seguranca/graph.json';
+    const CRIT_SIZE = { baixa: 2.5, media: 3.5, alta: 4.5, critica: 6.0 };
+    const FALLBACK_COLORS = ['#FF6B35','#FFD700','#87CEEB','#6AB89A','#9A6AB8','#FF4444','#C4A96A','#4A90D9','#E84393'];
+
+    let graph, gdata, nodeTypes = {}, activeTypes = {}, ntById = {};
+
+    const el = document.getElementById('graph');
+
+    boot();
+
+    async function boot() {
+        let data;
+        try {
+            const r = await fetch(GRAPH_URL);
+            if (!r.ok) throw new Error(r.status);
+            data = await r.json();
+        } catch (e) {
+            showError('Não foi possível carregar ' + GRAPH_URL + '.<br>Execute primeiro: python main.py<br>Depois: python -m http.server 8000');
+            return;
+        }
+        gdata = data;
+        nodeTypes = data.node_types || {};
+
+        // assign fallback colors for any unknown type
+        let ci = 0;
+        [...new Set(data.nodes.map(n => n.type))].forEach(t => {
+            if (!nodeTypes[t]) nodeTypes[t] = { label: t, color: FALLBACK_COLORS[ci % FALLBACK_COLORS.length] };
+            if (!nodeTypes[t].color) nodeTypes[t].color = FALLBACK_COLORS[ci % FALLBACK_COLORS.length];
+            activeTypes[t] = true;
+            ci++;
+        });
+        data.nodes.forEach(n => { ntById[n.id] = n.type; });
+
+        document.getElementById('graph-desc').textContent = (data.meta || {}).descricao || '';
+        document.title = (data.meta || {}).titulo || 'Cyber Graph Risk Mapping';
+        document.getElementById('stats').textContent =
+            data.nodes.length + ' ativos · ' + data.links.length + ' conexões';
+
+        buildLegend(data);
+        if (data.analysis) buildAnalysis(data.analysis);
+        render(data);
+    }
+
+    /* ── LEGEND ── */
+    function buildLegend(data) {
+        const box = document.getElementById('legend');
+        const types = [...new Set(data.nodes.map(n => n.type))];
+        types.forEach(t => {
+            const nt = nodeTypes[t] || {};
+            const div = document.createElement('div');
+            div.className = 'leg-item';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox'; cb.checked = true; cb.dataset.type = t;
+            cb.addEventListener('change', () => { activeTypes[t] = cb.checked; applyFilters(); });
+            const dot = document.createElement('span');
+            dot.className = 'leg-dot'; dot.style.background = nt.color || '#888';
+            div.append(cb, dot, document.createTextNode(nt.label || t));
+            box.appendChild(div);
+        });
+    }
+
+    /* ── ANALYSIS PANEL ── */
+    function buildAnalysis(a) {
+        // Shortest path
+        const pathBox = document.getElementById('path-display');
+        if (a.shortest_path && a.shortest_path.length) {
+            let html = '<div class="path-chain">';
+            a.shortest_path.forEach((n, i) => {
+                html += '<span>' + esc(n.replace(/_/g, ' ')) + '</span>';
+                if (i < a.shortest_path.length - 1) html += '<span class="path-sep"> →<br></span>';
+            });
+            html += '</div>';
+            html += '<div class="path-cost">Custo total: <strong style="color:var(--amber)">' + a.shortest_path_cost + '</strong></div>';
+            if (a.additional_paths && a.additional_paths.length) {
+                a.additional_paths.forEach(p => {
+                    html += '<div class="alt-path">'
+                        + esc(p.source.replace(/_/g,' ')) + ' → ' + esc(p.target.replace(/_/g,' '))
+                        + ': custo <strong style="color:var(--text-dim)">' + p.cost + '</strong></div>';
+                });
+            }
+            pathBox.innerHTML = html;
+        }
+
+        // Centrality
+        const centBox = document.getElementById('cent-display');
+        if (a.top_centrality && a.top_centrality.length) {
+            const max = a.top_centrality[0].betweenness || 1;
+            let html = '';
+            a.top_centrality.forEach((item, i) => {
+                const pct = Math.round(item.betweenness / max * 100);
+                html += '<div class="cent-row">'
+                    + '<span class="cent-rank">' + (i + 1) + '.</span>'
+                    + '<span class="cent-name">' + esc(item.id.replace(/_/g,' ')) + '</span>'
+                    + '<div class="cent-bar-wrap"><div class="cent-bar"><div class="cent-fill" style="width:' + pct + '%"></div></div></div>'
+                    + '<span class="cent-val">' + item.betweenness + '</span>'
+                    + '</div>';
+            });
+            centBox.innerHTML = html;
+        }
+
+        // Min cut
+        const cutBox = document.getElementById('cut-display');
+        if (a.min_cut) {
+            const mc = a.min_cut;
+            let html = '<div class="cut-val">Valor: <strong>' + mc.value + '</strong></div>';
+            (mc.cut_edges || []).forEach(e => {
+                html += '<div class="cut-edge-row"><span class="cut-dot"></span>'
+                    + esc(e.source.replace(/_/g,' ')) + ' → ' + esc(e.target.replace(/_/g,' '))
+                    + ' <span style="color:var(--text-muted)">(cap:' + e.capacity + ')</span></div>';
+            });
+            cutBox.innerHTML = html;
+        }
+    }
+
+    /* ── THREE.JS NODE FACTORY ── */
+    function makeNode(node) {
+        const group = new THREE.Group();
+        const sz = CRIT_SIZE[node.criticidade] || 3.5;
+        const nt = nodeTypes[node.type] || {};
+        const c = new THREE.Color(nt.color || '#888888');
+        let ei = node.isCriticalAsset ? 0.55 : (node.isOnShortestPath ? 0.45 : 0.12);
+
+        let geo;
+        switch (node.type) {
+            case 'externo':       geo = new THREE.TetrahedronGeometry(sz, 0); break;
+            case 'perimetro':     geo = new THREE.OctahedronGeometry(sz, 0); break;
+            case 'dados':         geo = new THREE.BoxGeometry(sz * 1.2, sz * 1.2, sz * 1.2); break;
+            case 'backup':        geo = new THREE.BoxGeometry(sz * 1.1, sz * 1.1, sz * 1.1); break;
+            case 'identidade':    geo = new THREE.IcosahedronGeometry(sz, 0); break;
+            case 'monitoramento': geo = new THREE.ConeGeometry(sz * 0.75, sz * 1.5, 8); break;
+            case 'administracao': geo = new THREE.OctahedronGeometry(sz * 1.1, 0); break;
+            default:              geo = new THREE.SphereGeometry(sz, 12, 12);
+        }
+
+        const mat = new THREE.MeshLambertMaterial({ color: c, emissive: c, emissiveIntensity: ei, transparent: true, opacity: 0.92 });
+        group.add(new THREE.Mesh(geo, mat));
+
+        // outer glow for critical assets
+        if (node.isCriticalAsset) {
+            const gm = new THREE.MeshLambertMaterial({ color: c, transparent: true, opacity: 0.07 });
+            group.add(new THREE.Mesh(new THREE.SphereGeometry(sz * 2.0, 8, 8), gm));
+        }
+
+        // amber ring for shortest path nodes
+        if (node.isOnShortestPath) {
+            const rm = new THREE.MeshBasicMaterial({ color: 0xFFB300, transparent: true, opacity: 0.7 });
+            const ring = new THREE.Mesh(new THREE.TorusGeometry(sz * 1.55, 0.22, 4, 18), rm);
+            ring.rotation.x = Math.PI / 3;
+            group.add(ring);
+        }
+
+        return group;
+    }
+
+    /* ── LINK COLOR FUNCTION ── */
+    const linkColor = l => {
+        if (l.isMinCutEdge)    return '#FF2D55';
+        if (l.isOnShortestPath) return '#FFB300';
+        return 'rgba(100,100,150,0.13)';
+    };
+
+    /* ── RENDER ── */
+    function render(data) {
+        if (graph) { try { graph._destructor(); } catch (_) {} graph = null; el.innerHTML = ''; }
+
+        graph = ForceGraph3D()(el)
+            .graphData({
+                nodes: data.nodes.map(n => ({ ...n })),
+                links: data.links.map(l => ({ ...l })),
+            })
+            .backgroundColor('#04040E')
+            .showNavInfo(false)
+            .nodeLabel(n => {
+                const nt = nodeTypes[n.type] || {};
+                return esc(n.label) + ' [' + (nt.label || n.type) + ' · ' + n.criticidade + ']';
+            })
+            .nodeVal(n => (CRIT_SIZE[n.criticidade] || 3.5) * 2.5)
+            .nodeThreeObject(makeNode)
+            .nodeThreeObjectExtend(false)
+            .linkColor(linkColor)
+            .linkWidth(l => (l.isMinCutEdge || l.isOnShortestPath) ? 1.6 : 0.4)
+            .linkOpacity(1)
+            .linkDirectionalParticles(l => l.isMinCutEdge ? 4 : (l.isOnShortestPath ? 2 : 0))
+            .linkDirectionalParticleColor(l => l.isMinCutEdge ? '#FF2D55' : '#FFB300')
+            .linkDirectionalParticleWidth(1.0)
+            .linkDirectionalParticleSpeed(0.004)
+            .linkDirectionalArrowLength(l => (l.isMinCutEdge || l.isOnShortestPath) ? 5 : 3)
+            .linkDirectionalArrowRelPos(1)
+            .warmupTicks(80)
+            .cooldownTicks(300)
+            .onNodeClick(onNodeClick)
+            .onNodeHover(n => { el.style.cursor = n ? 'pointer' : 'default'; })
+            .onBackgroundClick(closeDetail);
+
+        setTimeout(() => {
+            try {
+                const scene = graph.scene();
+                scene.add(new THREE.AmbientLight(0x202040, 1.0));
+                const l1 = new THREE.PointLight(0xFFB300, 0.55, 800);
+                l1.position.set(160, 220, 160); scene.add(l1);
+                const l2 = new THREE.PointLight(0xFF2D55, 0.45, 600);
+                l2.position.set(-200, -120, -160); scene.add(l2);
+                const l3 = new THREE.PointLight(0x4A90D9, 0.35, 500);
+                l3.position.set(0, -220, 120); scene.add(l3);
+            } catch (_) {}
+        }, 250);
+    }
+
+    /* ── FILTERS ── */
+    function applyFilters() {
+        if (!graph) return;
+        graph.nodeVisibility(n => activeTypes[n.type] !== false);
+        graph.linkVisibility(l => {
+            const s = idOf(l.source), t = idOf(l.target);
+            return activeTypes[ntById[s]] !== false && activeTypes[ntById[t]] !== false;
+        });
+    }
+
+    /* ── NODE CLICK ── */
+    function onNodeClick(node) {
+        if (!node) return;
+        const dist = (CRIT_SIZE[node.criticidade] || 3.5) * 13;
+        graph.cameraPosition(
+            { x: node.x + dist, y: node.y + dist * 0.4, z: node.z + dist },
+            { x: node.x, y: node.y, z: node.z }, 900
+        );
+        highlightNeighbors(node);
+        setTimeout(() => showDetail(node), 200);
+    }
+
+    function highlightNeighbors(node) {
+        const nb = new Set([node.id]);
+        graph.graphData().links.forEach(l => {
+            const s = idOf(l.source), t = idOf(l.target);
+            if (s === node.id) nb.add(t);
+            if (t === node.id) nb.add(s);
+        });
+        graph.nodeOpacity(n => nb.has(n.id) ? 1 : 0.04);
+        graph.linkColor(l => {
+            const s = idOf(l.source), t = idOf(l.target);
+            if (s !== node.id && t !== node.id) return 'rgba(100,100,150,0.02)';
+            return linkColor(l);
+        });
+    }
+
+    /* ── DETAIL PANEL ── */
+    function showDetail(node) {
+        const nt = nodeTypes[node.type] || {};
+        const color = nt.color || '#888';
+
+        let html = '<div class="d-type">' + esc(nt.label || node.type) + '</div>';
+        html += '<div class="d-title" style="border-left-color:' + color + '">' + esc(node.label) + '</div>';
+
+        const badges = [];
+        if (node.isCriticalAsset) badges.push('<span class="badge badge-crit">Ativo Crítico</span>');
+        if (node.isOnShortestPath) badges.push('<span class="badge badge-path">Caminho Mínimo</span>');
+        const links = graph.graphData().links;
+        const nearCut = links.some(l => l.isMinCutEdge && (idOf(l.source) === node.id || idOf(l.target) === node.id));
+        if (nearCut) badges.push('<span class="badge badge-cut">Aresta de Corte</span>');
+        if (badges.length) html += '<div class="d-badges">' + badges.join('') + '</div>';
+
+        html += dfield('Criticidade', node.criticidade);
+        html += dfield('Centralidade (betweenness)', node.centrality);
+        if (node.description) html += dfield('Descrição', node.description);
+
+        const out = [], inc = [];
+        links.forEach(l => {
+            const s = idOf(l.source), t = idOf(l.target);
+            if (s === node.id) out.push({ id: t, w: l.weight });
+            if (t === node.id) inc.push({ id: s, w: l.weight });
+        });
+
+        if (out.length) {
+            html += '<div class="d-field"><div class="d-label">Saída (' + out.length + ')</div>'
+                + '<div class="neighbor-wrap">'
+                + out.map(c => '<span class="neighbor-tag">' + esc(c.id.replace(/_/g,' ')) + ' <span style="opacity:.45">w:' + c.w + '</span></span>').join('')
+                + '</div></div>';
+        }
+        if (inc.length) {
+            html += '<div class="d-field"><div class="d-label">Entrada (' + inc.length + ')</div>'
+                + '<div class="neighbor-wrap">'
+                + inc.map(c => '<span class="neighbor-tag">' + esc(c.id.replace(/_/g,' ')) + ' <span style="opacity:.45">w:' + c.w + '</span></span>').join('')
+                + '</div></div>';
+        }
+
+        document.getElementById('detail-inner').innerHTML = html;
+        document.getElementById('detail-panel').classList.add('open');
+    }
+
+    function closeDetail() {
+        document.getElementById('detail-panel').classList.remove('open');
+        if (graph) {
+            graph.nodeOpacity(0.9);
+            graph.linkColor(linkColor);
+        }
+    }
+
+    document.getElementById('close-detail').addEventListener('click', closeDetail);
+
+    /* ── UTILS ── */
+    function idOf(x) { return typeof x === 'object' && x ? x.id : x; }
+
+    function dfield(label, value) {
+        if (value === undefined || value === null || value === '') return '';
+        return '<div class="d-field"><div class="d-label">' + esc(label) + '</div><div class="d-value">' + esc(String(value)) + '</div></div>';
+    }
+
+    function esc(s) {
+        if (s == null) return '';
+        const d = document.createElement('div');
+        d.textContent = String(s);
+        return d.innerHTML;
+    }
+
+    function showError(msg) {
+        el.innerHTML = '<div style="padding:60px;color:#555;font-family:JetBrains Mono,monospace;font-size:11px;line-height:2">' + msg + '</div>';
+    }
+})();
+</script>
+</body>
+</html>

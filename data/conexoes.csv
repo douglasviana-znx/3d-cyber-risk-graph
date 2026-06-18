@@ -1,0 +1,24 @@
+source,target,peso,descricao
+Internet,Firewall,2,Tráfego externo filtrado pelo firewall perimetral
+Firewall,Load_Balancer,4,Tráfego filtrado distribuído ao balanceador de carga
+Firewall,VPN_Gateway,6,Canal VPN com autenticação reforçada no perímetro
+Firewall,Email_Server,5,E-mail externo ingressado via controle do firewall
+Firewall,SIEM,7,Logs e alertas do firewall enviados ao SIEM
+Load_Balancer,Web_Server,3,Requisições distribuídas ao servidor web
+Web_Server,App_Server,2,Frontend repassa processamento ao servidor de aplicação
+App_Server,API_Gateway,5,Backend acessa serviços internos via API Gateway
+App_Server,Database,2,Backend consulta e grava no banco de dados
+App_Server,SIEM,6,Logs de aplicação enviados ao SIEM
+API_Gateway,Database,3,APIs consultam e atualizam o banco de dados
+Database,Backup_Server,8,Replicação periódica para servidor de backup
+Database,SIEM,7,Logs do banco de dados enviados ao SIEM
+VPN_Gateway,Workstation_1,5,Túnel VPN estabelecido para estação remota
+Workstation_1,Active_Directory,3,Autenticação do usuário remoto no diretório
+Workstation_2,Active_Directory,4,Autenticação do usuário local no diretório
+Active_Directory,Database,3,Diretório autentica acessos ao banco de dados
+Email_Server,Workstation_2,3,E-mails entregues à estação de trabalho local
+Workstation_2,File_Server,4,Acesso a arquivos compartilhados corporativos
+File_Server,Backup_Server,6,Backup de arquivos para servidor de cópias
+Admin_Console,Cloud_Storage,5,Administração e acesso ao armazenamento em nuvem
+Admin_Console,Active_Directory,6,Gerenciamento de contas e políticas do diretório
+SIEM,Admin_Console,8,Alertas e relatórios de segurança enviados ao console

@@ -1,0 +1,108 @@
+{
+  "nos": 17,
+  "arestas": 23,
+  "caminhos_minimos": [
+    {
+      "source": "Internet",
+      "target": "Database",
+      "path": [
+        "Internet",
+        "Firewall",
+        "Load_Balancer",
+        "Web_Server",
+        "App_Server",
+        "Database"
+      ],
+      "cost": 13
+    },
+    {
+      "source": "Internet",
+      "target": "Backup_Server",
+      "path": [
+        "Internet",
+        "Firewall",
+        "Email_Server",
+        "Workstation_2",
+        "File_Server",
+        "Backup_Server"
+      ],
+      "cost": 20
+    },
+    {
+      "source": "Internet",
+      "target": "Active_Directory",
+      "path": [
+        "Internet",
+        "Firewall",
+        "Email_Server",
+        "Workstation_2",
+        "Active_Directory"
+      ],
+      "cost": 14
+    },
+    {
+      "source": "Internet",
+      "target": "Admin_Console",
+      "path": [
+        "Internet",
+        "Firewall",
+        "SIEM",
+        "Admin_Console"
+      ],
+      "cost": 17
+    }
+  ],
+  "top_centralidade": [
+    {
+      "id": "Database",
+      "betweenness": 0.1208
+    },
+    {
+      "id": "SIEM",
+      "betweenness": 0.1208
+    },
+    {
+      "id": "Active_Directory",
+      "betweenness": 0.0958
+    },
+    {
+      "id": "Admin_Console",
+      "betweenness": 0.0875
+    },
+    {
+      "id": "App_Server",
+      "betweenness": 0.075
+    }
+  ],
+  "corte_minimo": {
+    "value": 2,
+    "cut_edges": [
+      {
+        "source": "Internet",
+        "target": "Firewall",
+        "capacity": 2
+      }
+    ],
+    "partition_reachable": [
+      "Backup_Server",
+      "Cloud_Storage",
+      "File_Server",
+      "Internet"
+    ],
+    "partition_non_reachable": [
+      "API_Gateway",
+      "Active_Directory",
+      "Admin_Console",
+      "App_Server",
+      "Database",
+      "Email_Server",
+      "Firewall",
+      "Load_Balancer",
+      "SIEM",
+      "VPN_Gateway",
+      "Web_Server",
+      "Workstation_1",
+      "Workstation_2"
+    ]
+  }
+}

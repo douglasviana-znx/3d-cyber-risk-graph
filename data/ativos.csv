@@ -1,0 +1,18 @@
+id,label,tipo,criticidade,descricao
+Internet,Internet,externo,baixa,Ponto de entrada externo da rede corporativa
+Firewall,Firewall,perimetro,alta,Controle e filtragem de tráfego perimetral
+VPN_Gateway,VPN Gateway,perimetro,alta,Acesso remoto seguro via túnel VPN
+Load_Balancer,Load Balancer,dmz,media,Distribuição de carga entre servidores web
+Web_Server,Web Server,dmz,media,Servidor de aplicações web voltado ao usuário
+App_Server,App Server,interno,alta,Servidor de lógica de negócios da aplicação
+API_Gateway,API Gateway,dmz,alta,Ponto de entrada centralizado para APIs internas
+Database,Database,dados,critica,Banco de dados corporativo principal
+Backup_Server,Backup Server,backup,critica,Servidor de cópias de segurança dos dados
+File_Server,File Server,interno,media,Servidor de arquivos compartilhados corporativos
+Active_Directory,Active Directory,identidade,critica,Serviço de autenticação e diretório corporativo
+Workstation_1,Workstation 1,interno,baixa,Estação de trabalho de usuário final remoto
+Workstation_2,Workstation 2,interno,baixa,Estação de trabalho de usuário final local
+Email_Server,Email Server,dmz,media,Servidor de e-mail corporativo
+SIEM,SIEM,monitoramento,alta,Sistema de monitoramento e correlação de eventos de segurança
+Admin_Console,Admin Console,administracao,critica,Console de administração central dos sistemas
+Cloud_Storage,Cloud Storage,dados,media,Armazenamento corporativo em nuvem

@@ -1,0 +1,505 @@
+{
+  "meta": {
+    "name": "seguranca",
+    "titulo": "Grafo 3D de Segurança em Redes Corporativas",
+    "descricao": "Modelagem de ativos, conexões e caminhos críticos em uma rede corporativa fictícia."
+  },
+  "node_types": {
+    "externo": {
+      "label": "Externo",
+      "color": "#FF6B35"
+    },
+    "perimetro": {
+      "label": "Perímetro",
+      "color": "#FFD700"
+    },
+    "dmz": {
+      "label": "DMZ",
+      "color": "#87CEEB"
+    },
+    "interno": {
+      "label": "Interno",
+      "color": "#6AB89A"
+    },
+    "identidade": {
+      "label": "Identidade",
+      "color": "#9A6AB8"
+    },
+    "dados": {
+      "label": "Dados",
+      "color": "#FF4444"
+    },
+    "backup": {
+      "label": "Backup",
+      "color": "#C4A96A"
+    },
+    "monitoramento": {
+      "label": "Monitoramento",
+      "color": "#4A90D9"
+    },
+    "administracao": {
+      "label": "Administração",
+      "color": "#E84393"
+    }
+  },
+  "nodes": [
+    {
+      "id": "Internet",
+      "label": "Internet",
+      "type": "externo",
+      "criticidade": "baixa",
+      "description": "Ponto de entrada externo da rede corporativa",
+      "centrality": 0.0,
+      "isCriticalAsset": false,
+      "isOnShortestPath": true
+    },
+    {
+      "id": "Firewall",
+      "label": "Firewall",
+      "type": "perimetro",
+      "criticidade": "alta",
+      "description": "Controle e filtragem de tráfego perimetral",
+      "centrality": 0.0625,
+      "isCriticalAsset": true,
+      "isOnShortestPath": true
+    },
+    {
+      "id": "VPN_Gateway",
+      "label": "VPN Gateway",
+      "type": "perimetro",
+      "criticidade": "alta",
+      "description": "Acesso remoto seguro via túnel VPN",
+      "centrality": 0.0083,
+      "isCriticalAsset": true,
+      "isOnShortestPath": false
+    },
+    {
+      "id": "Load_Balancer",
+      "label": "Load Balancer",
+      "type": "dmz",
+      "criticidade": "media",
+      "description": "Distribuição de carga entre servidores web",
+      "centrality": 0.0333,
+      "isCriticalAsset": false,
+      "isOnShortestPath": true
+    },
+    {
+      "id": "Web_Server",
+      "label": "Web Server",
+      "type": "dmz",
+      "criticidade": "media",
+      "description": "Servidor de aplicações web voltado ao usuário",
+      "centrality": 0.0583,
+      "isCriticalAsset": false,
+      "isOnShortestPath": true
+    },
+    {
+      "id": "App_Server",
+      "label": "App Server",
+      "type": "interno",
+      "criticidade": "alta",
+      "description": "Servidor de lógica de negócios da aplicação",
+      "centrality": 0.075,
+      "isCriticalAsset": true,
+      "isOnShortestPath": true
+    },
+    {
+      "id": "API_Gateway",
+      "label": "API Gateway",
+      "type": "dmz",
+      "criticidade": "alta",
+      "description": "Ponto de entrada centralizado para APIs internas",
+      "centrality": 0.0,
+      "isCriticalAsset": true,
+      "isOnShortestPath": false
+    },
+    {
+      "id": "Database",
+      "label": "Database",
+      "type": "dados",
+      "criticidade": "critica",
+      "description": "Banco de dados corporativo principal",
+      "centrality": 0.1208,
+      "isCriticalAsset": true,
+      "isOnShortestPath": true
+    },
+    {
+      "id": "Backup_Server",
+      "label": "Backup Server",
+      "type": "backup",
+      "criticidade": "critica",
+      "description": "Servidor de cópias de segurança dos dados",
+      "centrality": 0.0,
+      "isCriticalAsset": true,
+      "isOnShortestPath": false
+    },
+    {
+      "id": "File_Server",
+      "label": "File Server",
+      "type": "interno",
+      "criticidade": "media",
+      "description": "Servidor de arquivos compartilhados corporativos",
+      "centrality": 0.0167,
+      "isCriticalAsset": false,
+      "isOnShortestPath": false
+    },
+    {
+      "id": "Active_Directory",
+      "label": "Active Directory",
+      "type": "identidade",
+      "criticidade": "critica",
+      "description": "Serviço de autenticação e diretório corporativo",
+      "centrality": 0.0958,
+      "isCriticalAsset": true,
+      "isOnShortestPath": false
+    },
+    {
+      "id": "Workstation_1",
+      "label": "Workstation 1",
+      "type": "interno",
+      "criticidade": "baixa",
+      "description": "Estação de trabalho de usuário final remoto",
+      "centrality": 0.025,
+      "isCriticalAsset": false,
+      "isOnShortestPath": false
+    },
+    {
+      "id": "Workstation_2",
+      "label": "Workstation 2",
+      "type": "interno",
+      "criticidade": "baixa",
+      "description": "Estação de trabalho de usuário final local",
+      "centrality": 0.0542,
+      "isCriticalAsset": false,
+      "isOnShortestPath": false
+    },
+    {
+      "id": "Email_Server",
+      "label": "Email Server",
+      "type": "dmz",
+      "criticidade": "media",
+      "description": "Servidor de e-mail corporativo",
+      "centrality": 0.0333,
+      "isCriticalAsset": false,
+      "isOnShortestPath": false
+    },
+    {
+      "id": "SIEM",
+      "label": "SIEM",
+      "type": "monitoramento",
+      "criticidade": "alta",
+      "description": "Sistema de monitoramento e correlação de eventos de segurança",
+      "centrality": 0.1208,
+      "isCriticalAsset": true,
+      "isOnShortestPath": false
+    },
+    {
+      "id": "Admin_Console",
+      "label": "Admin Console",
+      "type": "administracao",
+      "criticidade": "critica",
+      "description": "Console de administração central dos sistemas",
+      "centrality": 0.0875,
+      "isCriticalAsset": true,
+      "isOnShortestPath": false
+    },
+    {
+      "id": "Cloud_Storage",
+      "label": "Cloud Storage",
+      "type": "dados",
+      "criticidade": "media",
+      "description": "Armazenamento corporativo em nuvem",
+      "centrality": 0.0,
+      "isCriticalAsset": false,
+      "isOnShortestPath": false
+    }
+  ],
+  "links": [
+    {
+      "source": "Internet",
+      "target": "Firewall",
+      "weight": 2,
+      "description": "Tráfego externo filtrado pelo firewall perimetral",
+      "isOnShortestPath": true,
+      "isMinCutEdge": true
+    },
+    {
+      "source": "Firewall",
+      "target": "Load_Balancer",
+      "weight": 4,
+      "description": "Tráfego filtrado distribuído ao balanceador de carga",
+      "isOnShortestPath": true,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "Firewall",
+      "target": "VPN_Gateway",
+      "weight": 6,
+      "description": "Canal VPN com autenticação reforçada no perímetro",
+      "isOnShortestPath": false,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "Firewall",
+      "target": "Email_Server",
+      "weight": 5,
+      "description": "E-mail externo ingressado via controle do firewall",
+      "isOnShortestPath": false,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "Firewall",
+      "target": "SIEM",
+      "weight": 7,
+      "description": "Logs e alertas do firewall enviados ao SIEM",
+      "isOnShortestPath": false,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "VPN_Gateway",
+      "target": "Workstation_1",
+      "weight": 5,
+      "description": "Túnel VPN estabelecido para estação remota",
+      "isOnShortestPath": false,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "Load_Balancer",
+      "target": "Web_Server",
+      "weight": 3,
+      "description": "Requisições distribuídas ao servidor web",
+      "isOnShortestPath": true,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "Web_Server",
+      "target": "App_Server",
+      "weight": 2,
+      "description": "Frontend repassa processamento ao servidor de aplicação",
+      "isOnShortestPath": true,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "App_Server",
+      "target": "API_Gateway",
+      "weight": 5,
+      "description": "Backend acessa serviços internos via API Gateway",
+      "isOnShortestPath": false,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "App_Server",
+      "target": "Database",
+      "weight": 2,
+      "description": "Backend consulta e grava no banco de dados",
+      "isOnShortestPath": true,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "App_Server",
+      "target": "SIEM",
+      "weight": 6,
+      "description": "Logs de aplicação enviados ao SIEM",
+      "isOnShortestPath": false,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "API_Gateway",
+      "target": "Database",
+      "weight": 3,
+      "description": "APIs consultam e atualizam o banco de dados",
+      "isOnShortestPath": false,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "Database",
+      "target": "Backup_Server",
+      "weight": 8,
+      "description": "Replicação periódica para servidor de backup",
+      "isOnShortestPath": false,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "Database",
+      "target": "SIEM",
+      "weight": 7,
+      "description": "Logs do banco de dados enviados ao SIEM",
+      "isOnShortestPath": false,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "File_Server",
+      "target": "Backup_Server",
+      "weight": 6,
+      "description": "Backup de arquivos para servidor de cópias",
+      "isOnShortestPath": false,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "Active_Directory",
+      "target": "Database",
+      "weight": 3,
+      "description": "Diretório autentica acessos ao banco de dados",
+      "isOnShortestPath": false,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "Workstation_1",
+      "target": "Active_Directory",
+      "weight": 3,
+      "description": "Autenticação do usuário remoto no diretório",
+      "isOnShortestPath": false,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "Workstation_2",
+      "target": "Active_Directory",
+      "weight": 4,
+      "description": "Autenticação do usuário local no diretório",
+      "isOnShortestPath": false,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "Workstation_2",
+      "target": "File_Server",
+      "weight": 4,
+      "description": "Acesso a arquivos compartilhados corporativos",
+      "isOnShortestPath": false,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "Email_Server",
+      "target": "Workstation_2",
+      "weight": 3,
+      "description": "E-mails entregues à estação de trabalho local",
+      "isOnShortestPath": false,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "SIEM",
+      "target": "Admin_Console",
+      "weight": 8,
+      "description": "Alertas e relatórios de segurança enviados ao console",
+      "isOnShortestPath": false,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "Admin_Console",
+      "target": "Cloud_Storage",
+      "weight": 5,
+      "description": "Administração e acesso ao armazenamento em nuvem",
+      "isOnShortestPath": false,
+      "isMinCutEdge": false
+    },
+    {
+      "source": "Admin_Console",
+      "target": "Active_Directory",
+      "weight": 6,
+      "description": "Gerenciamento de contas e políticas do diretório",
+      "isOnShortestPath": false,
+      "isMinCutEdge": false
+    }
+  ],
+  "analysis": {
+    "shortest_path": [
+      "Internet",
+      "Firewall",
+      "Load_Balancer",
+      "Web_Server",
+      "App_Server",
+      "Database"
+    ],
+    "shortest_path_cost": 13,
+    "additional_paths": [
+      {
+        "source": "Internet",
+        "target": "Backup_Server",
+        "path": [
+          "Internet",
+          "Firewall",
+          "Email_Server",
+          "Workstation_2",
+          "File_Server",
+          "Backup_Server"
+        ],
+        "cost": 20
+      },
+      {
+        "source": "Internet",
+        "target": "Active_Directory",
+        "path": [
+          "Internet",
+          "Firewall",
+          "Email_Server",
+          "Workstation_2",
+          "Active_Directory"
+        ],
+        "cost": 14
+      },
+      {
+        "source": "Internet",
+        "target": "Admin_Console",
+        "path": [
+          "Internet",
+          "Firewall",
+          "SIEM",
+          "Admin_Console"
+        ],
+        "cost": 17
+      }
+    ],
+    "top_centrality": [
+      {
+        "id": "Database",
+        "betweenness": 0.1208
+      },
+      {
+        "id": "SIEM",
+        "betweenness": 0.1208
+      },
+      {
+        "id": "Active_Directory",
+        "betweenness": 0.0958
+      },
+      {
+        "id": "Admin_Console",
+        "betweenness": 0.0875
+      },
+      {
+        "id": "App_Server",
+        "betweenness": 0.075
+      }
+    ],
+    "min_cut": {
+      "value": 2,
+      "cut_edges": [
+        {
+          "source": "Internet",
+          "target": "Firewall",
+          "capacity": 2
+        }
+      ],
+      "partition_reachable": [
+        "Backup_Server",
+        "Cloud_Storage",
+        "File_Server",
+        "Internet"
+      ],
+      "partition_non_reachable": [
+        "API_Gateway",
+        "Active_Directory",
+        "Admin_Console",
+        "App_Server",
+        "Database",
+        "Email_Server",
+        "Firewall",
+        "Load_Balancer",
+        "SIEM",
+        "VPN_Gateway",
+        "Web_Server",
+        "Workstation_1",
+        "Workstation_2"
+      ]
+    }
+  }
+}
